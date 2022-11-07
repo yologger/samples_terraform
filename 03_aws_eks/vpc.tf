@@ -1,12 +1,16 @@
 locals {
-    vpc_name = "eks_vpc"
-    default_route_table_name = "default_route_table"
-    default_security_group = "default_security_group"
+    vpc_name = "eksVpc"
+    vpc_cidr = "10.194.0.0/16"
+    default_route_table_name = "eksVpc_default_routeTable"
+    default_security_group_name = "eksVpc_default_securityGroup"
+    public_subnets = ["10.194.0.0/24", "10.194.1.0/24"]  
+    azs = ["ap-northeast-2a", "ap-northeast-2c"]
+    cluster_name = "eksCluster"
 }
 
 # VPC 생성
 resource "aws_vpc" "eks_vpc" {
-  cidr_block = var.cidr_block
+  cidr_block = local.vpc_cidr
   tags = {
     Name = local.vpc_name
   }
@@ -23,6 +27,20 @@ resource "aws_default_route_table" "default_route_table" {
 resource "aws_default_security_group" "default_security_group" {
   vpc_id = aws_vpc.eks_vpc.id
   tags   = {
-    Name = local.default_security_group
+    Name = local.default_security_group_name
+  }
+}
+
+## Public Subnet 정의
+resource "aws_subnet" "public" {
+  count = length(local.public_subnets)
+  vpc_id = aws_vpc.eks_vpc.id
+  cidr_block = local.public_subnets[count.index]
+  availability_zone = local.azs[count.index]
+  map_public_ip_on_launch = true  ## Public Subnet에 배치되는 서비스는 자동으로 Public IP를 할당받는다.
+  tags = {
+    Name = "${local.vpc_name}_publicSubnet_${count.index+1}",
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared",
+    "kubernetes.io/role/elb" = "1"
   }
 }

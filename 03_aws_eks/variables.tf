@@ -10,8 +10,3 @@ variable "access_key" {
 variable "secret_key" {
   type = string
 }
-
-# VPC
-variable "cidr_block" {
-  type = string
-}
