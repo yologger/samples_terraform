@@ -23,6 +23,7 @@ resource "aws_default_route_table" "default_route_table" {
       Name = local.default_route_table_name 
     }
 }
+
 ## VPC 생성 시 함께 생성되는 Securiy Group에 이름 추가
 resource "aws_default_security_group" "default_security_group" {
   vpc_id = aws_vpc.eks_vpc.id
@@ -32,7 +33,7 @@ resource "aws_default_security_group" "default_security_group" {
 }
 
 ## Public Subnet 정의
-resource "aws_subnet" "public" {
+resource "aws_subnet" "public_subnets" {
   count = length(local.public_subnets)
   vpc_id = aws_vpc.eks_vpc.id
   cidr_block = local.public_subnets[count.index]
@@ -51,4 +52,26 @@ resource "aws_internet_gateway" "eks_internet_gateway" {
   tags = {
     Name = "${local.vpc_name}_internetGateway"
   }
+}
+
+## Public Subnet과 Internet Gateway 연결을 위한 Route Table 정의
+resource "aws_route_table" "public_route_table" {
+  vpc_id = aws_vpc.eks_vpc.id
+  tags = { 
+    Name = "${local.vpc_name}_public_routeTable"
+  }
+}
+
+## Internet Gateway와 Route Table 연결
+resource "aws_route" "internetGateway_routeTable_route" {
+  route_table_id = aws_route_table.public_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id = aws_internet_gateway.eks_internet_gateway.id
+}
+
+## Public Subnet과 Route Table 연결
+resource "aws_route_table_association" "publicSubnet_routeTable_association" {
+  count = length(local.public_subnets)
+  subnet_id = aws_subnet.public_subnets[count.index].id
+  route_table_id = aws_route_table.public_route_table.id
 }
