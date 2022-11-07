@@ -44,3 +44,11 @@ resource "aws_subnet" "public" {
     "kubernetes.io/role/elb" = "1"
   }
 }
+
+## Public Subnet에 연결할 Internet Gateway 정의
+resource "aws_internet_gateway" "eks_internet_gateway" {
+  vpc_id = aws_vpc.eks_vpc.id
+  tags = {
+    Name = "${local.vpc_name}_internetGateway"
+  }
+}
