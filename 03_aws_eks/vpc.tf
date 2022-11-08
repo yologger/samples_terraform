@@ -16,7 +16,7 @@ resource "aws_vpc" "eks_vpc" {
   }
 }
 
-# VPC 생성 시 함께 생성되는 Route Table에 이름 추가
+# VPC 생성 시 함께 생성되 Default Route Table에 이름 추가
 resource "aws_default_route_table" "default_route_table" {
     default_route_table_id = aws_vpc.eks_vpc.default_route_table_id
     tags = { 
@@ -24,7 +24,7 @@ resource "aws_default_route_table" "default_route_table" {
     }
 }
 
-## VPC 생성 시 함께 생성되는 Securiy Group에 이름 추가
+## VPC 생성 시 함께 생성되는 Default Securiy Group에 이름 추가
 resource "aws_default_security_group" "default_security_group" {
   vpc_id = aws_vpc.eks_vpc.id
   tags   = {
@@ -74,4 +74,21 @@ resource "aws_route_table_association" "publicSubnet_routeTable_association" {
   count = length(local.public_subnets)
   subnet_id = aws_subnet.public_subnets[count.index].id
   route_table_id = aws_route_table.public_route_table.id
+}
+
+## NAT Gateway를 위한 Elastic IP
+resource "aws_eip" "natGateway_elasticIp" {
+  vpc = true
+  tags = {
+    Name = "${local.vpc_name}-natgw"
+  }
+}
+
+## NAT Gateway
+resource "aws_nat_gateway" "NATGateway" {
+  allocation_id = aws_eip.natGateway_elasticIp.id
+  subnet_id = aws_subnet.public_subnets[0].id  ## NAT Gateway는 Public Subnet에 위치해야한다.
+  tags = {
+    Name = "${local.vpc_name}-natgw"
+  }
 }
