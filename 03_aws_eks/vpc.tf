@@ -4,6 +4,7 @@ locals {
     default_route_table_name = "eksVpc_default_routeTable"
     default_security_group_name = "eksVpc_default_securityGroup"
     public_subnets = ["10.194.0.0/24", "10.194.1.0/24"]  
+    private_subnets = ["10.194.100.0/24", "10.194.101.0/24"]
     azs = ["ap-northeast-2a", "ap-northeast-2c"]
     cluster_name = "eksCluster"
 }
@@ -74,6 +75,19 @@ resource "aws_route_table_association" "publicSubnet_routeTable_association" {
   count = length(local.public_subnets)
   subnet_id = aws_subnet.public_subnets[count.index].id
   route_table_id = aws_route_table.public_route_table.id
+}
+
+## Private Subnet 정의
+resource "aws_subnet" "private_subnets" {
+  count = length(local.private_subnets)
+  vpc_id = aws_vpc.eks_vpc.id
+  cidr_block = local.private_subnets[count.index]
+  availability_zone = local.azs[count.index]
+  tags = {
+    Name = "${local.vpc_name}-privateSubnet-${count.index + 1}",
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared", 
+    "kubernetes.io/role/internal-elb"             = "1"
+  }
 }
 
 ## NAT Gateway를 위한 Elastic IP
