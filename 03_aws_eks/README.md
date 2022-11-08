@@ -15,7 +15,7 @@ AWS EKS 구성을 위한 VPC 구조는 다음과 같다.
     - 보통 실제 서비스를 제공하는 WAS가 위치한다.
     - 두 개 이상의 서로 다른 AZ에 서브넷이 위치해야한다.
 - `Internet Gateway`
-    - Public Subnet에서 외부 인터넷과 통신할 때 사용한다.
+    - Public Subnet과 외부 인터넷이 통신할 때 사용한다.
 - `NAT Gateway`
     - Private Subnet에서 외부 인터넷과 아웃바운드 방향으로 통신할 때 사용한다.
 - Public Subnet을 위한 `Routing Table`. 다음 두 가지 규칙을 함께 정의해야한다.
