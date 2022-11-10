@@ -58,3 +58,17 @@ resource "aws_iam_role_policy_attachment" "pod_execution_AmazonEKSFargatePodExec
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
   role       = aws_iam_role.pod_execution_role.name
 }
+
+## EKS Cluster에 Fargate를 Node로 추가
+resource "aws_eks_fargate_profile" "default" {
+  cluster_name           = aws_eks_cluster.eks_cluster.name
+  fargate_profile_name   = "eks-fargate-profile"
+  pod_execution_role_arn = aws_iam_role.pod_execution_role.arn
+  subnet_ids             = aws_subnet.private_subnets[*].id
+  selector {
+    namespace = "default"
+  }
+  selector {
+    namespace = "kube-system"
+  }
+}
