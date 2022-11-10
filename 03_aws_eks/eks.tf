@@ -37,3 +37,24 @@ resource "aws_eks_cluster" "eks_cluster" {
     aws_iam_role_policy_attachment.cluster_AmazonEKSVPCResourceController,
   ]
 }
+
+## Fargate에서 필요로 하는 Role
+resource "aws_iam_role" "pod_execution_role" {
+  name = "${local.cluster_name}-pod-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "eks-fargate-pods.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "pod_execution_AmazonEKSFargatePodExecutionRolePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+  role       = aws_iam_role.pod_execution_role.name
+}
