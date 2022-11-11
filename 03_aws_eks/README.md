@@ -1,8 +1,8 @@
 # AWS EKS by Terraform
 Terraform으로 AWS EKS를 구성하는 예제입니다.
 
-## VPC 구조
-AWS EKS 구성을 위한 VPC 구조는 다음과 같다.
+## VPC 아키텍처
+AWS EKS 구성을 위한 VPC 아키텍처는 다음과 같다.
 
 ![](./images/1.png)
 
@@ -24,3 +24,6 @@ AWS EKS 구성을 위한 VPC 구조는 다음과 같다.
 - Private Subnet을 위한 `Routing Table`. 다음 두 가지 규칙을 함께 정의해야한다.
     - Private Subnet 간 통신을 위한 규칙
     - Private Subnet에서 외부 인터넷 망으로 아웃바운드 통신을 위한 규칙을 함께 정의
+
+## Kubernetes 아키텍처
+- AWS Fargete를 사용합니다.
