@@ -4,7 +4,7 @@ locals {
     public_subnets = ["10.194.0.0/24", "10.194.1.0/24"]  
     private_subnets = ["10.194.100.0/24", "10.194.101.0/24"]
     azs = ["ap-northeast-2a", "ap-northeast-2c"]
-    cluster_name = "eks-cluster"
+    cluster_name = "k8s-cluster"
 }
 
 # VPC 생성
