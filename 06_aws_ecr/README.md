@@ -26,4 +26,6 @@ AWS EKS 구성을 위한 VPC 아키텍처는 다음과 같다.
     - Private Subnet에서 외부 인터넷 망으로 아웃바운드 통신을 위한 규칙을 함께 정의
 
 ## Kubernetes 아키텍처
-- AWS Fargete를 사용합니다.
+- Control Plane은 Managed Service인 AWS EKS를 사용한다.
+- ~WorkerNode는 NodeGroup(EC2)를 사용한다.~
+- WorkerNode는 AWS Fargete를 사용한다.
