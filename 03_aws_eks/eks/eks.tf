@@ -20,6 +20,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
   role       = aws_iam_role.eks_cluster_role.name
 }
 
+## Role에 Policy 추가
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSVPCResourceController" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
   role       = aws_iam_role.eks_cluster_role.name
@@ -54,6 +55,7 @@ resource "aws_iam_role" "pod_execution_role" {
   })
 }
 
+## Fargate가 사용할 Role 정의
 resource "aws_iam_role_policy_attachment" "pod_execution_AmazonEKSFargatePodExecutionRolePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
   role       = aws_iam_role.pod_execution_role.name
